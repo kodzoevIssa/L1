@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Геокодирование</title>
+    <style>
+      #resultList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        display: none;
+      }
+
+      #resultList li {
+        padding: 8px;
+        cursor: pointer;
+      }
+
+      #resultList li:hover {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="addressInput" placeholder="Введите адрес" />
+    <ul id="resultList"></ul>
+
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=99a2680f-4519-4846-945a-5b9d2657d4af"></script>
+    <script>
+      function debounce(func, delay) {
+        let timer;
+        return function () {
+          const context = this;
+          const args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            func.apply(context, args);
+          }, delay);
+        };
+      }
+
+      const geocodeWithDebounce = debounce(geocode, 300);
+
+      function geocode(address) {
+        ymaps.geocode(address).then(function (result) {
+          const resultList = document.getElementById("resultList");
+          resultList.innerHTML = "";
+
+          result.geoObjects.each(function (geoObject) {
+            const listItem = document.createElement("li");
+            listItem.textContent = geoObject.getAddressLine();
+            listItem.addEventListener("click", function () {
+              document.getElementById("addressInput").value =
+                geoObject.getAddressLine();
+              resultList.style.display = "none";
+            });
+            resultList.appendChild(listItem);
+          });
+
+          if (resultList.children.length > 0) {
+            resultList.style.display = "block";
+          } else {
+            resultList.style.display = "none";
+          }
+        });
+      }
+
+      document
+        .getElementById("addressInput")
+        .addEventListener("input", function (event) {
+          const inputValue = event.target.value.trim();
+
+          if (inputValue.length > 0) {
+            geocodeWithDebounce(inputValue);
+          } else {
+            document.getElementById("resultList").style.display = "none";
+          }
+        });
+    </script>
+  </body>
+</html>

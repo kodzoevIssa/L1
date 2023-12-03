@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VK Widget</title>
+    <style>
+      #vkWidget {
+        width: 300px;
+        height: 400px;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+
+      .post {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="vkWidget"></div>
+
+    <script>
+      const vkWidget = document.getElementById("vkWidget");
+      let offset = 0;
+      let posts = [];
+
+      function getPosts() {
+        const accessToken = "";
+        const groupId = "";
+        // Виджет не работает потому что переменные пустые. Я не понял будет ли взыматься какая то коммисия за использование данных вк и решил не рисковать
+        const count = 10; // Количество постов, загружаемых за один запрос
+
+        fetch(
+          `https://api.vk.com/method/wall.get?owner_id=-${groupId}&count=${count}&offset=${offset}&access_token=${accessToken}&v=5.131`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.response && data.response.items) {
+              posts = posts.concat(data.response.items);
+              offset += count;
+
+              renderPosts();
+            }
+          })
+          .catch((error) => console.error(error));
+      }
+
+      function renderPosts() {
+        vkWidget.innerHTML = "";
+        posts.forEach((post) => {
+          const postElement = document.createElement("div");
+          postElement.className = "post";
+          postElement.textContent = post.text;
+          vkWidget.appendChild(postElement);
+        });
+      }
+
+      // Подгрузка новых постов при прокрутке
+      vkWidget.addEventListener("scroll", function () {
+        if (
+          vkWidget.scrollTop + vkWidget.clientHeight >=
+          vkWidget.scrollHeight - 10
+        ) {
+          getPosts();
+        }
+      });
+
+      // Загрузка сохраненных данных из локального хранилища
+      const cachedPosts = localStorage.getItem("cachedPosts");
+      if (cachedPosts) {
+        posts = JSON.parse(cachedPosts);
+        renderPosts();
+      }
+
+      // Инициализация виджета
+      getPosts();
+
+      // Сохранение данных в локальное хранилище при закрытии страницы
+      window.addEventListener("beforeunload", function () {
+        localStorage.setItem("cachedPosts", JSON.stringify(posts));
+      });
+    </script>
+  </body>
+</html>

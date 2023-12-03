@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="ElementId">
+      <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+      </ul>
+    </div>
+    <script>
+      function recursiveDOMTraversal(node, action) {
+        // Выполняем действие для текущего узла
+        action(node);
+
+        // Рекурсивно обходим все дочерние узлы
+        node = node.firstChild;
+        while (node) {
+          recursiveDOMTraversal(node, action);
+          node = node.nextSibling;
+        }
+      }
+
+      // Пример использования: вывод тега каждого узла в консоль
+      const startingElement = document.getElementById("ElementId");
+      recursiveDOMTraversal(startingElement, function (node) {
+        if (node.nodeType === 1) {
+          // Проверяем, что узел является элементом (nodeType 1 - ELEMENT_NODE)
+          console.log(node.tagName);
+        }
+      });
+    </script>
+  </body>
+</html>

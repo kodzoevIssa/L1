@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Анимация элемента</title>
+    <style>
+      .animated-element {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        transition: width 0.5s ease-in-out, height 0.5s ease-in-out; /* Добавляем transition для плавного изменения размера */
+      }
+      .size {
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="animated-element" onclick="animateElement()"></div>
+
+    <script>
+      function animateElement() {
+        const element = document.querySelector(".animated-element");
+
+        // Изменяем размер элемента
+        element.classList.toggle("size");
+      }
+    </script>
+  </body>
+</html>
